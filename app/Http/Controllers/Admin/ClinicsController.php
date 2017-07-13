@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Clinic;
+use App\User;
 
 class ClinicsController extends Controller
 {
@@ -14,7 +17,11 @@ class ClinicsController extends Controller
      */
     public function index()
     {
-        return view('dashboard.clinics.index');
+
+      $user = Auth::user();//returns the authenticated user.
+      $clinics = $user->clinics()->get();
+     return view('dashboard.clinics.index', compact('clinics'));
+    
     }
 
     /**
@@ -35,7 +42,18 @@ class ClinicsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $user_id = Auth::id();
+
+
+        $clinic = new Clinic(array(
+          'name'=>$request->get('name'),
+          'phone'=>$request->get('phone'),
+          'address'=>$request->get('address'),
+          'user_id'=>$user_id,
+        ));
+
+        $clinic->save();
+        return redirect('/dashboard/clinics/create')->with('status', 'Clinic has been Added Successfully!');
     }
 
     /**
@@ -46,7 +64,7 @@ class ClinicsController extends Controller
      */
     public function show($id)
     {
-        //
+        
     }
 
     /**
