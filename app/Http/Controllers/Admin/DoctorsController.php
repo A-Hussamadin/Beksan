@@ -5,11 +5,18 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use Illuminate\Support\Facades\Auth;
+use App\Doctor;
+use App\User;
+
 class DoctorsController extends Controller
 {
     public function index()
     {
-        return view('dashboard.doctors.index');
+        $user = Auth::user();
+        $doctors = $user->doctors()->get();
+        
+        return view('dashboard.doctors.index', 'doctors');
     }
 
     /**
@@ -19,7 +26,7 @@ class DoctorsController extends Controller
      */
     public function create()
     {
-        //
+        return view('dashboard.doctors.create');
     }
 
     /**
@@ -30,7 +37,20 @@ class DoctorsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user_id = Auth::id();
+
+
+        $doctor = new Doctor(array(
+          'name'=>$request->get('name'),
+          'email'=>$request->get('email'),
+          'phone'=>$request->get('phone'),
+          'address'=>$request->get('address'),
+          'clinic_id'=>$request->get('clinic_id'),
+          'user_id'=>$user_id,
+        ));
+
+        $clinic->save();
+        return redirect('/dashboard/doctors/create')->with('status', 'Doctor has been Added Successfully!');
     }
 
     /**
